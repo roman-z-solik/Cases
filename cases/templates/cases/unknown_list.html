@@ -1,0 +1,56 @@
+{% extends 'cases/base.html' %}
+
+{% block title %}Неизвестные корпуса{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Неизвестные корпуса</h1>
+
+    {% for unknown in unknown_cases %}
+        <div class="card mb-4">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    {% if unknown.photo %}
+                        <img src="{{ unknown.photo.url }}" class="img-fluid rounded-start" alt="Неизвестный корпус" style="max-height: 300px; width: 100%; object-fit: contain;">
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <p class="text-muted">Добавлен: {{ unknown.created_at|date:"d.m.Y H:i" }}</p>
+
+                        <hr>
+                        <h6>Знаете этот корпус? Напишите:</h6>
+                        <form method="post" action="{% url 'add_message' unknown.id %}">
+                            {% csrf_token %}
+                            <div class="mb-2">
+                                <input type="text" name="name" placeholder="Ваше имя" class="form-control" required>
+                            </div>
+                            <div class="mb-2">
+                                <textarea name="message" placeholder="Что это за корпус? (производитель, модель)" class="form-control" rows="2" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
+                        </form>
+
+                        <!-- Кнопка удаления (видна только админу) -->
+                        {% if user.is_authenticated %}
+                            <hr>
+                            <a href="{% url 'delete_unknown' unknown.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Удалить этот корпус?')">Удалить</a>
+                        {% endif %}
+
+                        {% if unknown.messages.all %}
+                            <hr>
+                            <h6>Сообщения:</h6>
+                            {% for msg in unknown.messages.all %}
+                                <div class="border-bottom mb-2 pb-2">
+                                    <strong>{{ msg.name }}</strong> <small class="text-muted">{{ msg.created_at|date:"d.m.Y H:i" }}</small>
+                                    <p class="mb-0 mt-1">{{ msg.message }}</p>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>Пока нет неизвестных корпусов.</p>
+    {% endfor %}
+{% endblock %}

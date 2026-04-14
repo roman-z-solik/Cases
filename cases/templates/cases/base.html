@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Каталог корпусов{% endblock %}</title>
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+        .card-img-top {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .card-img-top:hover {
+            transform: scale(1.02);
+        }
+        .modal-img {
+            max-width: 90%;
+            max-height: 90%;
+            margin: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">Каталог корпусов</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            По производителю
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for manufacturer in manufacturers %}
+                                <li><a class="dropdown-item" href="{% url 'manufacturer_detail' manufacturer.id %}">{{ manufacturer.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'unknown_list' %}">Неизвестные корпуса</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'unknown_create' %}">Загрузить неизвестный</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Модальное окно для увеличенного фото -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content bg-dark">
+                <div class="modal-body text-center">
+                    <img src="" alt="Увеличенное фото" id="modalImage" class="modal-img">
+                    <div class="mt-2 text-white" id="modalCaption"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        // Открытие модального окна при клике на фото
+        document.querySelectorAll('.case-photo').forEach(img => {
+            img.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const fullImg = this.getAttribute('data-full') || this.src;
+                const caption = this.getAttribute('data-caption') || '';
+                document.getElementById('modalImage').src = fullImg;
+                document.getElementById('modalCaption').innerHTML = caption;
+                new bootstrap.Modal(document.getElementById('imageModal')).show();
+            });
+        });
+    </script>
+</body>
+</html>

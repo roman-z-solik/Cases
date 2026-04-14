@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: cases_web
+    restart: unless-stopped
+    volumes:
+      - ./media:/app/media
+      - ./static:/app/static
+    ports:
+      - "8001:8000"
+    environment:
+      - DB_NAME=cases_db
+      - DB_USER=roman-z
+      - DB_PASSWORD=Rz67911223
+      - DB_HOST=192.168.3.156
+      - DB_PORT=2534
+      - DEBUG=False
+      - SECRET_KEY=django-insecure-9$3)ph%jipr+^$!6_)4m$$$4&jx23mor=@v*f9m-cwqi24rj$$

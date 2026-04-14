@@ -1,0 +1,107 @@
+{% extends 'cases/base.html' %}
+
+{% block title %}Каталог корпусов{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% for case in cases %}
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    {% if case.photo %}
+                        <img src="{{ case.photo.url }}"
+                             class="card-img-top case-photo-{{ case.id }}"
+                             alt="{{ case.manufacturer.name }} {{ case.model_name }}"
+                             data-full="{{ case.photo.url }}"
+                             data-caption="{{ case.manufacturer.name }} {{ case.model_name }}"
+                             data-case-id="{{ case.id }}"
+                             data-photos='[
+                                {% for photo in case.all_photos %}
+                                    {"url": "{{ photo.url }}", "caption": "{{ case.manufacturer.name }} {{ case.model_name }} - фото {{ forloop.counter }}"}{% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                             ]'
+                             style="height: 200px; width: 100%; object-fit: contain; cursor: pointer;">
+                    {% else %}
+                        <div class="card-img-top bg-secondary text-white text-center py-5">Нет фото</div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ case.manufacturer.name }} {{ case.model_name }}</h6>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Модальное окно для просмотра всех фото с каруселью -->
+    <div class="modal fade" id="galleryModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content bg-dark">
+                <div class="modal-header bg-dark text-white border-secondary">
+                    <h5 class="modal-title" id="galleryModalTitle"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="galleryCarousel" class="carousel slide" data-bs-ride="false">
+                        <div class="carousel-inner" id="galleryCarouselInner">
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" style="background-color: rgba(0,0,0,0.5) !important;"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-dark rounded-circle p-3" style="background-color: rgba(0,0,0,0.5) !important;"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Функция открытия галереи
+        function openGallery(photos, startIndex, title) {
+            const carouselInner = document.getElementById('galleryCarouselInner');
+            const carousel = document.getElementById('galleryCarousel');
+            const modalTitle = document.getElementById('galleryModalTitle');
+
+            modalTitle.textContent = title;
+
+            // Очищаем карусель
+            carouselInner.innerHTML = '';
+
+            // Добавляем слайды
+            photos.forEach((photo, index) => {
+                const div = document.createElement('div');
+                div.className = 'carousel-item' + (index === startIndex ? ' active' : '');
+                div.innerHTML = `
+                    <img src="${photo.url}" class="d-block w-100" alt="${photo.caption}" style="max-height: 70vh; object-fit: contain;">
+                    <div class="text-center text-white mt-2">${photo.caption}</div>
+                `;
+                carouselInner.appendChild(div);
+            });
+
+            // Сбрасываем карусель на нужный слайд
+            const bsCarousel = new bootstrap.Carousel(carousel, {
+                interval: false
+            });
+            bsCarousel.to(startIndex);
+
+            // Открываем модальное окно
+            new bootstrap.Modal(document.getElementById('galleryModal')).show();
+        }
+
+        // Навешиваем обработчики на все фото
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for case in cases %}
+                const img_{{ case.id }} = document.querySelector('.case-photo-{{ case.id }}');
+                if (img_{{ case.id }}) {
+                    const photosData = img_{{ case.id }}.getAttribute('data-photos');
+                    if (photosData) {
+                        const photos = JSON.parse(photosData);
+                        img_{{ case.id }}.addEventListener('click', function() {
+                            openGallery(photos, 0, '{{ case.manufacturer.name }} {{ case.model_name }}');
+                        });
+                    }
+                }
+            {% endfor %}
+        });
+    </script>
+{% endblock %}
