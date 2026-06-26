@@ -2,6 +2,10 @@ from django.db import models
 
 
 class Manufacturer(models.Model):
+    """
+    Модель производителя корпусов.
+    Содержит название производителя.
+    """
     name = models.CharField('Название производителя', max_length=100)
 
     def __str__(self):
@@ -13,6 +17,10 @@ class Manufacturer(models.Model):
 
 
 class Case(models.Model):
+    """
+    Модель корпуса с фотографиями.
+    Связана с производителем (ForeignKey), содержит название модели и до 6 фото.
+    """
     manufacturer = models.ForeignKey(
         Manufacturer,
         on_delete=models.CASCADE,
@@ -32,6 +40,10 @@ class Case(models.Model):
         return f'{self.manufacturer.name} {self.model_name}'
 
     def all_photos(self):
+        """
+        Возвращает список всех загруженных фото корпуса (основное + дополнительные).
+        Используется для отображения галереи или подсчёта количества фото.
+        """
         photos = [self.photo]
         if self.photo_2:
             photos.append(self.photo_2)
@@ -51,6 +63,10 @@ class Case(models.Model):
 
 
 class UnknownCase(models.Model):
+    """
+    Модель для корпусов, производитель которых неизвестен.
+    Содержит фото и дату добавления.
+    """
     photo = models.ImageField('Фото', upload_to='unknown_cases/')
     created_at = models.DateTimeField('Дата добавления', auto_now_add=True)
 
@@ -63,6 +79,10 @@ class UnknownCase(models.Model):
 
 
 class Message(models.Model):
+    """
+    Модель сообщения от пользователя о неизвестном корпусе.
+    Связана с UnknownCase (ForeignKey), содержит имя отправителя, текст сообщения и дату.
+    """
     unknown_case = models.ForeignKey(UnknownCase, on_delete=models.CASCADE, related_name='messages')
     name = models.CharField('Ваше имя', max_length=100)
     message = models.TextField('Сообщение')
