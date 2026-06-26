@@ -7,6 +7,10 @@ from .forms import UnknownCaseForm, MessageForm
 
 
 def index(request):
+    """
+    Главная страница каталога корпусов.
+    Отображает все корпуса с фильтром по производителям.
+    """
     cases = Case.objects.all().select_related('manufacturer').order_by('manufacturer__name', 'model_name')
     manufacturers = Manufacturer.objects.all().order_by('name')
     return render(request, 'cases/index.html', {
@@ -16,6 +20,10 @@ def index(request):
 
 
 def manufacturer_detail(request, manufacturer_id):
+    """
+    Страница с корпусами конкретного производителя.
+    Принимает ID производителя, показывает все его корпуса.
+    """
     manufacturer = get_object_or_404(Manufacturer, id=manufacturer_id)
     cases = manufacturer.cases.all().order_by('model_name')
     manufacturers = Manufacturer.objects.all().order_by('name')
@@ -27,6 +35,10 @@ def manufacturer_detail(request, manufacturer_id):
 
 
 def unknown_list(request):
+    """
+    Список неизвестных корпусов.
+    Отображает все корпуса, добавленные как 'неизвестные', сортировка — сначала новые.
+    """
     unknown_cases = UnknownCase.objects.all().order_by('-created_at')
     manufacturers = Manufacturer.objects.all().order_by('name')
     return render(request, 'cases/unknown_list.html', {
@@ -36,6 +48,10 @@ def unknown_list(request):
 
 
 def unknown_create(request):
+    """
+    Страница добавления нового неизвестного корпуса.
+    Принимает загрузку фото, создаёт запись в UnknownCase.
+    """
     manufacturers = Manufacturer.objects.all().order_by('name')
 
     if request.method == 'POST':
@@ -53,6 +69,10 @@ def unknown_create(request):
 
 
 def unknown_detail(request, unknown_id):
+    """
+    Детальная страница неизвестного корпуса.
+    Отображает фото, форму для отправки сообщения и список уже отправленных сообщений.
+    """
     unknown_case = get_object_or_404(UnknownCase, id=unknown_id)
     manufacturers = Manufacturer.objects.all().order_by('name')
     messages_list = unknown_case.messages.all().order_by('-created_at')
@@ -76,6 +96,10 @@ def unknown_detail(request, unknown_id):
 
 
 def add_message(request, unknown_id):
+    """
+    Отдельное представление для отправки сообщения о неизвестном корпусе.
+    Создаёт запись в Message и отправляет уведомление на email администратора.
+    """
     unknown_case = get_object_or_404(UnknownCase, id=unknown_id)
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -114,6 +138,9 @@ def add_message(request, unknown_id):
 
 
 def delete_unknown(request, unknown_id):
+    """
+    Удаление неизвестного корпуса по его ID.
+    """
     unknown_case = get_object_or_404(UnknownCase, id=unknown_id)
     unknown_case.delete()
     return redirect('unknown_list')
