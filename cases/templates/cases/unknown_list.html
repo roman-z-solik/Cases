@@ -35,17 +35,6 @@
                             <hr>
                             <a href="{% url 'delete_unknown' unknown.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Удалить этот корпус?')">Удалить</a>
                         {% endif %}
-
-                        {% if unknown.messages.all %}
-                            <hr>
-                            <h6>Сообщения:</h6>
-                            {% for msg in unknown.messages.all %}
-                                <div class="border-bottom mb-2 pb-2">
-                                    <strong>{{ msg.name }}</strong> <small class="text-muted">{{ msg.created_at|date:"d.m.Y H:i" }}</small>
-                                    <p class="mb-0 mt-1">{{ msg.message }}</p>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
                     </div>
                 </div>
             </div>

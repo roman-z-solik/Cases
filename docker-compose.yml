@@ -18,3 +18,10 @@ services:
       - DB_PORT=2534
       - DEBUG=False
       - SECRET_KEY=django-insecure-9$3)ph%jipr+^$!6_)4m$$$4&jx23mor=@v*f9m-cwqi24rj$$
+      - EMAIL_HOST=smtp.mail.ru
+      - EMAIL_PORT=2525
+      - EMAIL_USE_TLS=True
+      - EMAIL_USE_SSL=False
+      - EMAIL_HOST_USER=roman-z@inbox.ru
+      - EMAIL_HOST_PASSWORD=nKKTV5dgqZLhOSCHhNSX
+      - ADMIN_EMAIL=roman-z@inbox.ru

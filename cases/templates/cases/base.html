@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Каталог корпусов{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'cases/favicon.ico' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'cases/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'cases/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'cases/favicon-32x32.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'cases/apple-touch-icon.png' %}">
+
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <style>
         .card-img-top {
@@ -25,7 +33,10 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'index' %}">Каталог корпусов</a>
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'cases/favicon-16x16.png' %}" alt="icon" width="20" height="20" class="d-inline-block align-text-top">
+                Каталог корпусов
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -55,6 +66,15 @@
     </nav>
 
     <div class="container mt-4">
+        <!-- Блок для вывода сообщений -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} fade show" role="alert" id="alert-{{ forloop.counter }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </div>
@@ -84,6 +104,17 @@
                 new bootstrap.Modal(document.getElementById('imageModal')).show();
             });
         });
+
+        // Автоматическое скрытие сообщений через 5 секунд
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
+            });
+        }, 5000);
     </script>
 </body>
 </html>

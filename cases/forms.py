@@ -1,10 +1,12 @@
 from django import forms
 from .models import UnknownCase, Message
 
+
 class UnknownCaseForm(forms.ModelForm):
     class Meta:
         model = UnknownCase
         fields = ['photo']
+
 
 class MessageForm(forms.ModelForm):
     class Meta:
